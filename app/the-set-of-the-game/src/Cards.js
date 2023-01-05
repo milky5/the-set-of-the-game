@@ -406,8 +406,10 @@ export class Cards extends React.Component {
       <div>
         <hr />
         <div>
-          {this.state.displayCards.map((card) => {
+          {this.state.displayCards.map((card, index) => {
             return <button key={card.id}>
+            index: {index}<br/>
+            ------<br/>
             cardID: {card.id}<br/>
             color: {card.color}<br/>
             shape: {card.shape}<br/>
