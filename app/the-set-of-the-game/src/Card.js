@@ -5,24 +5,53 @@ export function Card(props) {
   return (
     <svg viewBox={viewBoxStr} width={width} height={height}>
       <rect width={width} height={height} fill="white" stroke="black" />
-      {RenderShape(props.shape, props.color)}
+      {RenderShape(props.shape, props.color, props.number)}
     </svg>
   );
 }
 
-function RenderShape(shape, color) {
-  const centerX = 25;
-  const centerY = 50;
+function RenderShape(shape, color, count) {
+  let createComponent;
   switch (shape) {
     case "circle":
-      return Circle(centerX, centerY, color);
+      createComponent = Circle;
+      break;
     case "magatama":
-      return Magatama(centerX, centerY, color);
+      createComponent = Magatama;
+      break;
     case "diamond":
-      return Diamond(centerX, centerY, color);
+      createComponent = Diamond;
+      break;
     default:
       return null;
   }
+
+  const leftCenterX = 25;
+  const middleLeftCenterX = 50;
+  const centerCenterX = 75;
+  const middleRightCenterX = 100;
+  const rightCenterX = 125;
+  const centerY = 50;
+
+  const components = [];
+  switch (count) {
+    case 1:
+      components.push(createComponent(centerCenterX, centerY, color));
+      break;
+    case 2:
+      components.push(createComponent(middleLeftCenterX, centerY, color));
+      components.push(createComponent(middleRightCenterX, centerY, color));
+      break;
+    case 3:
+      components.push(createComponent(leftCenterX, centerY, color));
+      components.push(createComponent(centerCenterX, centerY, color));
+      components.push(createComponent(rightCenterX, centerY, color));
+      break;
+    default:
+      return null;
+  }
+
+  return components;
 }
 
 function Circle(centerX, centerY, color) {
