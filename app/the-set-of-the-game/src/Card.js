@@ -85,97 +85,70 @@ function Circle(centerX, centerY, color, paint) {
   const rectY = centerY - 25;
   const rectWidth = 20;
   const rectHeight = 50;
-  const overwriteRectX = rectX + 1;
-  const overwriteRectY = rectY - 1;
-  const overwriteRectWidth = rectWidth - 2;
-  const overwriteRectHeight = rectHeight + 2;
+
+  let fillColor = color;
+  let fillOpacity = 1;
+  let overwriteRect = null;
 
   switch (paint) {
     case "solid":
-      return (
-        <g>
-          <circle cx={circleX} cy={topCircleY} r={circleRadius} fill={color} />
-          <circle
-            cx={circleX}
-            cy={bottomCircleY}
-            r={circleRadius}
-            fill={color}
-          />
-          <rect
-            x={rectX}
-            y={rectY}
-            width={rectWidth}
-            height={rectHeight}
-            fill={color}
-          />
-        </g>
-      );
+      break;
     case "stripes":
       // TODO: implement
-      return (
-        <g>
-          <circle
-            cx={circleX}
-            cy={topCircleY}
-            r={circleRadius}
-            fill={color}
-            fillOpacity="0.2"
-          />
-          <circle
-            cx={circleX}
-            cy={bottomCircleY}
-            r={circleRadius}
-            fill={color}
-            fillOpacity="0.2"
-          />
-          <rect
-            x={rectX}
-            y={rectY}
-            width={rectWidth}
-            height={rectHeight}
-            fill={color}
-            fillOpacity="0.2"
-          />
-        </g>
-      );
+      fillOpacity = 0.2;
+      break;
     case "none":
-      return (
-        <g>
-          <circle
-            cx={circleX}
-            cy={topCircleY}
-            r={circleRadius}
-            fill="transparent"
-            stroke={color}
-          />
-          <circle
-            cx={circleX}
-            cy={bottomCircleY}
-            r={circleRadius}
-            fill="transparent"
-            stroke={color}
-          />
-          <rect
-            x={rectX}
-            y={rectY}
-            width={rectWidth}
-            height={rectHeight}
-            fill="transparent"
-            stroke={color}
-          />
-          <rect
-            x={overwriteRectX}
-            y={overwriteRectY}
-            width={overwriteRectWidth}
-            height={overwriteRectHeight}
-            fill="white"
-            stroke="white"
-          />
-        </g>
+      const overwriteRectX = rectX + 1;
+      const overwriteRectY = rectY - 1;
+      const overwriteRectWidth = rectWidth - 2;
+      const overwriteRectHeight = rectHeight + 2;
+
+      fillColor = "transparent";
+      overwriteRect = (
+        <rect
+          x={overwriteRectX}
+          y={overwriteRectY}
+          width={overwriteRectWidth}
+          height={overwriteRectHeight}
+          fill="white"
+          stroke="white"
+        />
       );
+      break;
     default:
       return null;
   }
+
+  return (
+    <g>
+      <circle
+        cx={circleX}
+        cy={topCircleY}
+        r={circleRadius}
+        fill={fillColor}
+        fillOpacity={fillOpacity}
+        stroke={color}
+      />
+      <circle
+        cx={circleX}
+        cy={bottomCircleY}
+        r={circleRadius}
+        fill={fillColor}
+        fillOpacity={fillOpacity}
+        stroke={color}
+      />
+      <rect
+        x={rectX}
+        y={rectY}
+        width={rectWidth}
+        height={rectHeight}
+        fill={fillColor}
+        fillOpacity={fillOpacity}
+        stroke={color}
+      />
+      {overwriteRect}
+    </g>
+  );
 }
 
 function Magatama(centerX, centerY, color, paint) {
@@ -185,34 +158,33 @@ function Magatama(centerX, centerY, color, paint) {
   const bottomY = centerY + 35;
   const pointsStr = `${leftX},${topY} ${rightX},${topY} ${leftX},${bottomY} ${rightX},${bottomY}`;
 
+  let fillColor = color;
+  let fillOpacity = 1;
+
   switch (paint) {
     case "solid":
-      return (
-        <g>
-          <polygon points={pointsStr} stroke={color} fill={color} />
-        </g>
-      );
+      break;
     case "stripes":
       // TODO: implement
-      return (
-        <g>
-          <polygon
-            points={pointsStr}
-            stroke={color}
-            fill={color}
-            fillOpacity="0.2"
-          />
-        </g>
-      );
+      fillOpacity = 0.2;
+      break;
     case "none":
-      return (
-        <g>
-          <polygon points={pointsStr} stroke={color} fill="transparent" />
-        </g>
-      );
+      fillColor = "transparent";
+      break;
     default:
       return null;
   }
+
+  return (
+    <g>
+      <polygon
+        points={pointsStr}
+        stroke={color}
+        fill={fillColor}
+        fillOpacity={fillOpacity}
+      />
+    </g>
+  );
 }
 
 function Diamond(centerX, centerY, color, paint) {
@@ -222,32 +194,31 @@ function Diamond(centerX, centerY, color, paint) {
   const bottomY = centerY + 35;
   const pointsStr = `${centerX},${topY} ${leftX},${centerY} ${centerX},${bottomY} ${rightX},${centerY}`;
 
+  let fillColor = color;
+  let fillOpacity = 1;
+
   switch (paint) {
     case "solid":
-      return (
-        <g>
-          <polygon points={pointsStr} stroke={color} fill={color} />
-        </g>
-      );
+      break;
     case "stripes":
       // TODO: implement
-      return (
-        <g>
-          <polygon
-            points={pointsStr}
-            stroke={color}
-            fill={color}
-            fillOpacity="0.2"
-          />
-        </g>
-      );
+      fillOpacity = 0.2;
+      break;
     case "none":
-      return (
-        <g>
-          <polygon points={pointsStr} stroke={color} fill="transparent" />
-        </g>
-      );
+      fillColor = "transparent";
+      break;
     default:
       return null;
   }
+
+  return (
+    <g>
+      <polygon
+        points={pointsStr}
+        stroke={color}
+        fill={fillColor}
+        fillOpacity={fillOpacity}
+      />
+    </g>
+  );
 }
