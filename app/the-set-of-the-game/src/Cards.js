@@ -311,6 +311,7 @@ const combinations = [
 export class Cards extends React.Component {
   constructor(props) {
     super(props);
+    cards.sort(() => Math.random() - 0.5);
     this.state = {
       showHint: false,
       displayCards: cards.slice(0, 12),
@@ -345,6 +346,14 @@ export class Cards extends React.Component {
       );
       if (result) {
         alert("セット！");
+        const card1 = this.state.displayCards[selectedCards[0]];
+        const card2 = this.state.displayCards[selectedCards[1]];
+        const card3 = this.state.displayCards[selectedCards[2]];
+        if (card1 && card2 && card3) {
+          cards.splice(cards.indexOf(card1), 1);
+          cards.splice(cards.indexOf(card2), 1);
+          cards.splice(cards.indexOf(card3), 1);
+        }
       } else {
         alert("セット不成立...");
       }
@@ -355,6 +364,7 @@ export class Cards extends React.Component {
     }
 
     this.setState(() => ({
+      displayCards: cards.slice(0, 12),
       selectedCards: selectedCards,
     }));
     event.preventDefault();
