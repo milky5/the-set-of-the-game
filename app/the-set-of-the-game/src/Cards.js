@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 const cards = [
   { id: 1, color: "赤", shape: "丸", paint: "べた", number: 1 },
@@ -304,15 +304,15 @@ const combinations = [
   [9, 10, 11],
   [9, 10, 12],
   [9, 11, 12],
-  [10, 11, 12]
-]
+  [10, 11, 12],
+];
 
 export class Cards extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       showHint: false,
-      displayCards: cards.slice(0, 12)
+      displayCards: cards.slice(0, 12),
     };
 
     this.showChange = this.showChange.bind(this);
@@ -324,7 +324,7 @@ export class Cards extends React.Component {
     });
   }
 
-  getHints(){
+  getHints() {
     const displayCards = this.state.displayCards;
 
     // const combinations = [];
@@ -372,7 +372,7 @@ export class Cards extends React.Component {
         if (!card) {
           continue;
         }
-        
+
         if (!colors.includes(card.color)) {
           colors.push(card.color);
         }
@@ -390,15 +390,17 @@ export class Cards extends React.Component {
         }
       }
 
-      if ((colors.length === 1 || colors.length === 3) &&
-          (shapes.length === 1 || shapes.length === 3) &&
-          (paints.length === 1 || paints.length === 3) &&
-          (numbers.length === 1 || numbers.length === 3)) {
+      if (
+        (colors.length === 1 || colors.length === 3) &&
+        (shapes.length === 1 || shapes.length === 3) &&
+        (paints.length === 1 || paints.length === 3) &&
+        (numbers.length === 1 || numbers.length === 3)
+      ) {
         combinationsToSet.push(combination.join(", "));
       }
     }
 
-    return combinationsToSet
+    return combinationsToSet;
   }
 
   render() {
@@ -407,27 +409,40 @@ export class Cards extends React.Component {
         <hr />
         <div>
           {this.state.displayCards.map((card, index) => {
-            return <button key={card.id}>
-            index: {index}<br/>
-            ------<br/>
-            cardID: {card.id}<br/>
-            color: {card.color}<br/>
-            shape: {card.shape}<br/>
-            paint: {card.paint}<br/>
-            number: {card.number}
-            </button>;
+            return (
+              <button key={card.id}>
+                index: {index}
+                <br />
+                ------
+                <br />
+                cardID: {card.id}
+                <br />
+                color: {card.color}
+                <br />
+                shape: {card.shape}
+                <br />
+                paint: {card.paint}
+                <br />
+                number: {card.number}
+              </button>
+            );
           })}
         </div>
         <hr />
         <div>
-          <input type="checkbox" checked={this.state.showHint} onChange={this.showChange}></input>
+          <input
+            type="checkbox"
+            checked={this.state.showHint}
+            onChange={this.showChange}
+          ></input>
           <label>show hint</label>
         </div>
         <hr />
         <div>
-          {this.state.showHint && this.getHints().map((key) => {
-            return <div key={key}>{key}</div>;
-          })}
+          {this.state.showHint &&
+            this.getHints().map((key) => {
+              return <div key={key}>{key}</div>;
+            })}
         </div>
       </div>
     );
