@@ -1,4 +1,5 @@
 import React from "react";
+import { Card } from "./Card";
 
 const cards = [
   { id: 1, color: "赤", shape: "丸", paint: "べた", number: 1 },
@@ -410,21 +411,15 @@ export class Cards extends React.Component {
         <div>
           {this.state.displayCards.map((card, index) => {
             return (
-              <button key={card.id}>
-                index: {index}
-                <br />
-                ------
-                <br />
-                cardID: {card.id}
-                <br />
-                color: {card.color}
-                <br />
-                shape: {card.shape}
-                <br />
-                paint: {card.paint}
-                <br />
-                number: {card.number}
-              </button>
+              <Card
+                key={card.id}
+                index={index}
+                cardID={card.id}
+                color={card.color}
+                shape={card.shape}
+                paint={card.paint}
+                number={card.number}
+              />
             );
           })}
         </div>
