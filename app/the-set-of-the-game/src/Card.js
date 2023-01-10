@@ -2,6 +2,8 @@ export function Card(props) {
   const width = 150;
   const height = 100;
   const viewBoxStr = `0 0 ${width} ${height}`;
+  const cardBoarderColor = props.selected === true ? "yellow" : "black";
+  const cardBoarderWidth = props.selected === true ? "5" : "1";
   const shapes = RenderShape(
     props.shape,
     props.color,
@@ -9,12 +11,20 @@ export function Card(props) {
     props.paint
   );
   return (
-    <svg viewBox={viewBoxStr} width={width} height={height}>
-      <rect width={width} height={height} fill="white" stroke="black" />
-      {shapes.map((element, index) => {
-        return <g key={index}>{element}</g>;
-      })}
-    </svg>
+    <a href="#" onClick={props.onClick}>
+      <svg viewBox={viewBoxStr} width={width} height={height}>
+        <rect
+          width={width}
+          height={height}
+          fill="white"
+          stroke={cardBoarderColor}
+          strokeWidth={cardBoarderWidth}
+        />
+        {shapes.map((element, index) => {
+          return <g key={index}>{element}</g>;
+        })}
+      </svg>
+    </a>
   );
 }
 

@@ -314,9 +314,11 @@ export class Cards extends React.Component {
     this.state = {
       showHint: false,
       displayCards: cards.slice(0, 12),
+      selectedCards: [],
     };
 
     this.showChange = this.showChange.bind(this);
+    this.cardClicked = this.handleCardClicked.bind(this);
   }
 
   showChange(event) {
@@ -325,8 +327,84 @@ export class Cards extends React.Component {
     });
   }
 
-  getHints() {
+  handleCardClicked(i, event) {
+    let selectedCards = this.state.selectedCards.slice();
+
+    if (selectedCards.includes(i)) {
+      selectedCards.splice(selectedCards.indexOf(i), 1);
+    } else {
+      selectedCards.push(i);
+    }
+
+    if (selectedCards.length === 3) {
+      selectedCards.sort((a, b) => a - b);
+      const result = this.isSetComplete(
+        selectedCards[0],
+        selectedCards[1],
+        selectedCards[2]
+      );
+      if (result) {
+        alert("セット！");
+      } else {
+        alert("セット不成立...");
+      }
+    }
+
+    if (3 <= selectedCards.length) {
+      selectedCards = [];
+    }
+
+    this.setState(() => ({
+      selectedCards: selectedCards,
+    }));
+    event.preventDefault();
+  }
+
+  isSetComplete(card1Index, card2Index, card3Index) {
     const displayCards = this.state.displayCards;
+    const combination = [card1Index, card2Index, card3Index];
+    const colors = [];
+    const shapes = [];
+    const paints = [];
+    const numbers = [];
+    for (let i = 0; i < combination.length; i++) {
+      const cardIndex = combination[i];
+      const card = displayCards[cardIndex];
+      if (!card) {
+        continue;
+      }
+
+      if (!colors.includes(card.color)) {
+        colors.push(card.color);
+      }
+
+      if (!shapes.includes(card.shape)) {
+        shapes.push(card.shape);
+      }
+
+      if (!paints.includes(card.paint)) {
+        paints.push(card.paint);
+      }
+
+      if (!numbers.includes(card.number)) {
+        numbers.push(card.number);
+      }
+    }
+
+    if (
+      (colors.length === 1 || colors.length === 3) &&
+      (shapes.length === 1 || shapes.length === 3) &&
+      (paints.length === 1 || paints.length === 3) &&
+      (numbers.length === 1 || numbers.length === 3)
+    ) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  getHints() {
+    // const displayCards = this.state.displayCards;
 
     // const combinations = [];
 
@@ -363,40 +441,11 @@ export class Cards extends React.Component {
         return [];
       }
 
-      const colors = [];
-      const shapes = [];
-      const paints = [];
-      const numbers = [];
-      for (let j = 0; j < combination.length; j++) {
-        const cardIndex = combination[j] - 1;
-        const card = displayCards[cardIndex];
-        if (!card) {
-          continue;
-        }
-
-        if (!colors.includes(card.color)) {
-          colors.push(card.color);
-        }
-
-        if (!shapes.includes(card.shape)) {
-          shapes.push(card.shape);
-        }
-
-        if (!paints.includes(card.paint)) {
-          paints.push(card.paint);
-        }
-
-        if (!numbers.includes(card.number)) {
-          numbers.push(card.number);
-        }
-      }
-
-      if (
-        (colors.length === 1 || colors.length === 3) &&
-        (shapes.length === 1 || shapes.length === 3) &&
-        (paints.length === 1 || paints.length === 3) &&
-        (numbers.length === 1 || numbers.length === 3)
-      ) {
+      const a = combination[0] - 1;
+      const b = combination[1] - 1;
+      const c = combination[2] - 1;
+      const result = this.isSetComplete(a, b, c);
+      if (result === true) {
         combinationsToSet.push(combination.join(", "));
       }
     }
@@ -419,6 +468,8 @@ export class Cards extends React.Component {
                 shape={card.shape}
                 paint={card.paint}
                 number={card.number}
+                selected={this.state.selectedCards.includes(index)}
+                onClick={this.handleCardClicked.bind(this, index)}
               />
             );
           })}
