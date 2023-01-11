@@ -13,6 +13,7 @@ export function Card(props) {
   return (
     <a href="#" onClick={props.onClick}>
       <svg viewBox={viewBoxStr} width={width} height={height}>
+        {RenderDefs(props.shape, props.color, props.number, props.paint)}
         <rect
           width={width}
           height={height}
@@ -25,6 +26,69 @@ export function Card(props) {
         })}
       </svg>
     </a>
+  );
+}
+
+function RenderDefs(shape, color, count, paint) {
+  switch (paint) {
+    case "stripes":
+      break;
+    case "solid":
+    case "none":
+    default:
+      return null;
+  }
+
+  let createDefs;
+  switch (shape) {
+    case "circle":
+      createDefs = CircleDefs;
+      break;
+    case "magatama":
+      createDefs = MagatamaDefs;
+      break;
+    case "diamond":
+      createDefs = DiamondDefs;
+      break;
+    default:
+      return null;
+  }
+
+  const leftCenterX = 25;
+  const middleLeftCenterX = 50;
+  const centerCenterX = 75;
+  const middleRightCenterX = 100;
+  const rightCenterX = 125;
+  const centerY = 50;
+
+  const clipPaths = [];
+  switch (count) {
+    case 1:
+      clipPaths.push(createDefs(centerCenterX, centerY, color, paint));
+      break;
+    case 2:
+      clipPaths.push(createDefs(middleLeftCenterX, centerY, color, paint));
+      clipPaths.push(createDefs(middleRightCenterX, centerY, color, paint));
+      break;
+    case 3:
+      clipPaths.push(createDefs(leftCenterX, centerY, color, paint));
+      clipPaths.push(createDefs(centerCenterX, centerY, color, paint));
+      clipPaths.push(createDefs(rightCenterX, centerY, color, paint));
+      break;
+    default:
+      return null;
+  }
+
+  const stripesPatternID = `stripes_pattern_${color}`;
+  return (
+    <defs>
+      <pattern id={stripesPatternID} x="0" y="0" width="1" height="0.05">
+        <line x1="0" y1="5" x2="100" y2="5" stroke={color} stroke-width="1" />
+      </pattern>
+      {clipPaths.map((element, index) => {
+        return <g key={index}>{element}</g>;
+      })}
+    </defs>
   );
 }
 
@@ -76,6 +140,22 @@ function RenderShape(shape, color, count, paint) {
   return components;
 }
 
+function CircleDefs(centerX, centerY, color, paint) {
+  const circleRadius = 10;
+  const rectX = centerX - 10;
+  const rectY = centerY - 25;
+  const rectWidth = 20;
+  const rectHeight = 50;
+  const clipPathID = `circle_${centerX}_${centerY}`;
+  const pathString = `M${rectX},${rectY} v${rectHeight} a${circleRadius},${circleRadius},0,1,0,${rectWidth},0 v-${rectHeight} a${circleRadius},${circleRadius},0,1,0,-${rectWidth},0z`;
+
+  return (
+    <clipPath id={clipPathID}>
+      <path d={pathString} stroke={color} />
+    </clipPath>
+  );
+}
+
 function Circle(centerX, centerY, color, paint) {
   const circleX = centerX;
   const topCircleY = centerY - 25;
@@ -87,67 +167,57 @@ function Circle(centerX, centerY, color, paint) {
   const rectHeight = 50;
 
   let fillColor = color;
-  let fillOpacity = 1;
-  let overwriteRect = null;
+  let stripesPatternRect = null;
 
   switch (paint) {
     case "solid":
       break;
     case "stripes":
-      // TODO: implement
-      fillOpacity = 0.2;
+      const topLeftX = centerX - 25;
+      const topLeftY = 0;
+      const clipPathID = `circle_${centerX}_${centerY}`;
+      const clipPath = `url(#${clipPathID})`;
+      const stripesPatternID = `stripes_pattern_${color}`;
+      const fill = `url(#${stripesPatternID})`;
+      stripesPatternRect = (
+        <rect
+          x={topLeftX}
+          y={topLeftY}
+          width="50"
+          height="100"
+          fill={fill}
+          clip-path={clipPath}
+        ></rect>
+      );
+      fillColor = "transparent";
       break;
     case "none":
-      const overwriteRectX = rectX + 1;
-      const overwriteRectY = rectY - 1;
-      const overwriteRectWidth = rectWidth - 2;
-      const overwriteRectHeight = rectHeight + 2;
-
       fillColor = "transparent";
-      overwriteRect = (
-        <rect
-          x={overwriteRectX}
-          y={overwriteRectY}
-          width={overwriteRectWidth}
-          height={overwriteRectHeight}
-          fill="white"
-          stroke="white"
-        />
-      );
       break;
     default:
       return null;
   }
 
+  const pathString = `M${rectX},${rectY} v${rectHeight} a${circleRadius},${circleRadius},0,1,0,${rectWidth},0 v-${rectHeight} a${circleRadius},${circleRadius},0,1,0,-${rectWidth},0z`;
   return (
     <g>
-      <circle
-        cx={circleX}
-        cy={topCircleY}
-        r={circleRadius}
-        fill={fillColor}
-        fillOpacity={fillOpacity}
-        stroke={color}
-      />
-      <circle
-        cx={circleX}
-        cy={bottomCircleY}
-        r={circleRadius}
-        fill={fillColor}
-        fillOpacity={fillOpacity}
-        stroke={color}
-      />
-      <rect
-        x={rectX}
-        y={rectY}
-        width={rectWidth}
-        height={rectHeight}
-        fill={fillColor}
-        fillOpacity={fillOpacity}
-        stroke={color}
-      />
-      {overwriteRect}
+      {stripesPatternRect}
+      <path d={pathString} fill={fillColor} stroke={color} />
     </g>
+  );
+}
+
+function MagatamaDefs(centerX, centerY, color, paint) {
+  const leftX = centerX - 10;
+  const rightX = centerX + 10;
+  const topY = centerY - 35;
+  const bottomY = centerY + 35;
+  const clipPathID = `magatama_${centerX}_${centerY}`;
+  const pointsStr = `${leftX},${topY} ${rightX},${topY} ${leftX},${bottomY} ${rightX},${bottomY}`;
+  return (
+    <clipPath id={clipPathID}>
+      <polygon points={pointsStr} stroke={color} />
+    </clipPath>
   );
 }
 
@@ -159,14 +229,29 @@ function Magatama(centerX, centerY, color, paint) {
   const pointsStr = `${leftX},${topY} ${rightX},${topY} ${leftX},${bottomY} ${rightX},${bottomY}`;
 
   let fillColor = color;
-  let fillOpacity = 1;
+  let stripesPatternRect = null;
 
   switch (paint) {
     case "solid":
       break;
     case "stripes":
-      // TODO: implement
-      fillOpacity = 0.2;
+      const topLeftX = centerX - 25;
+      const topLeftY = 0;
+      const clipPathID = `magatama_${centerX}_${centerY}`;
+      const clipPath = `url(#${clipPathID})`;
+      const stripesPatternID = `stripes_pattern_${color}`;
+      const fill = `url(#${stripesPatternID})`;
+      stripesPatternRect = (
+        <rect
+          x={topLeftX}
+          y={topLeftY}
+          width="50"
+          height="100"
+          fill={fill}
+          clip-path={clipPath}
+        ></rect>
+      );
+      fillColor = "transparent";
       break;
     case "none":
       fillColor = "transparent";
@@ -177,13 +262,23 @@ function Magatama(centerX, centerY, color, paint) {
 
   return (
     <g>
-      <polygon
-        points={pointsStr}
-        stroke={color}
-        fill={fillColor}
-        fillOpacity={fillOpacity}
-      />
+      {stripesPatternRect}
+      <polygon points={pointsStr} stroke={color} fill={fillColor} />
     </g>
+  );
+}
+
+function DiamondDefs(centerX, centerY, color, paint) {
+  const leftX = centerX - 10;
+  const rightX = centerX + 10;
+  const topY = centerY - 35;
+  const bottomY = centerY + 35;
+  const clipPathID = `diamond_${centerX}_${centerY}`;
+  const pointsStr = `${centerX},${topY} ${leftX},${centerY} ${centerX},${bottomY} ${rightX},${centerY}`;
+  return (
+    <clipPath id={clipPathID}>
+      <polygon points={pointsStr} stroke={color} />
+    </clipPath>
   );
 }
 
@@ -195,14 +290,29 @@ function Diamond(centerX, centerY, color, paint) {
   const pointsStr = `${centerX},${topY} ${leftX},${centerY} ${centerX},${bottomY} ${rightX},${centerY}`;
 
   let fillColor = color;
-  let fillOpacity = 1;
+  let stripesPatternRect = null;
 
   switch (paint) {
     case "solid":
       break;
     case "stripes":
-      // TODO: implement
-      fillOpacity = 0.2;
+      const topLeftX = centerX - 25;
+      const topLeftY = 0;
+      const clipPathID = `diamond_${centerX}_${centerY}`;
+      const clipPath = `url(#${clipPathID})`;
+      const stripesPatternID = `stripes_pattern_${color}`;
+      const fill = `url(#${stripesPatternID})`;
+      stripesPatternRect = (
+        <rect
+          x={topLeftX}
+          y={topLeftY}
+          width="50"
+          height="100"
+          fill={fill}
+          clip-path={clipPath}
+        ></rect>
+      );
+      fillColor = "transparent";
       break;
     case "none":
       fillColor = "transparent";
@@ -213,12 +323,8 @@ function Diamond(centerX, centerY, color, paint) {
 
   return (
     <g>
-      <polygon
-        points={pointsStr}
-        stroke={color}
-        fill={fillColor}
-        fillOpacity={fillOpacity}
-      />
+      {stripesPatternRect}
+      <polygon points={pointsStr} stroke={color} fill={fillColor} />
     </g>
   );
 }
